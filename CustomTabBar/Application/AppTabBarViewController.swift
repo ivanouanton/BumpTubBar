@@ -8,20 +8,36 @@
 import UIKit
 
 class AppTabBarController: UITabBarController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.loadTabBar()
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor:
+                                                            UIColor.white], for: .normal)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor:
+                                                            UIColor.systemYellow], for: .selected)
         
-        view.backgroundColor = .white
+        loadTabBar()
 
-        UITabBar.appearance().barTintColor = .brown
-
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor:
-                                                            UIColor.red], for: .normal)
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor:
-                                                            UIColor.green], for: .selected)
+        let customTabBar = BumpTabBar(frame: tabBar.frame)
+        customTabBar.mainButtonHandler = {
+            let alert = UIAlertController(title: "Alert", message: "Message", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                switch action.style{
+                    case .default:
+                    print("default")
+                    
+                    case .cancel:
+                    print("cancel")
+                    
+                    case .destructive:
+                    print("destructive")
+                    
+                }
+            }))
+            self.present(alert, animated: true, completion: nil)
+        }
+        setValue(customTabBar, forKey: "tabBar")
     }
     
     private func loadTabBar() {
@@ -29,10 +45,27 @@ class AppTabBarController: UITabBarController {
         var viewControllerList: [UIViewController] = []
 
         
-        for tabItem in tabItems {
+        for (key, tabItem) in tabItems.enumerated() {
             
             let vc = tabItem.viewController
             vc.tabBarItem = UITabBarItem(title: tabItem.displayTitle, image: tabItem.icon, selectedImage: tabItem.icon)
+            vc.tabBarItem.titlePositionAdjustment = UIOffset(horizontal: -15, vertical: 0)
+            
+            var hOffSet: CGFloat
+            switch key {
+            case 0:
+                hOffSet = -15
+            case 1:
+                hOffSet = -25
+            case 2:
+                hOffSet = 25
+            case 3:
+                hOffSet = 15
+            default:
+                hOffSet = 0
+            }
+            
+            vc.tabBarItem.titlePositionAdjustment = UIOffset(horizontal: hOffSet, vertical: -5)
             viewControllerList.append(vc)
         }
         
